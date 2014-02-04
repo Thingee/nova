@@ -1443,6 +1443,10 @@ class ComputeManager(manager.Manager):
                 block_device_info['swap'])
             return block_device_info
 
+        except exception.OverQuota as ex:
+            with excutils.save_and_reraise_exception():
+                LOG.exception(ex)
+
         except Exception:
             with excutils.save_and_reraise_exception():
                 LOG.exception(_('Instance failed block device setup'),

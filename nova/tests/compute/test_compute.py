@@ -1401,6 +1401,27 @@ class ComputeTestCase(BaseTestCase):
         self._assert_state({'vm_state': vm_states.ERROR,
                             'task_state': None})
 
+    def test_run_instance_setup_block_device_over_quota_fail(self):
+        """block device mapping over quota failure test.
+
+        Make sure when we're over volume quota according to Cinder client, the
+        appropriate exception is raised and the instances to ERROR state, keep
+        the task state.
+        """
+        def fake(*args, **kwargs):
+            raise exception.OverQuota(overs='block volumes')
+        self.stubs.Set(nova.compute.manager.ComputeManager,
+                       '_prep_block_device', fake)
+        instance = self._create_fake_instance()
+        self.assertRaises(exception.OverQuota, self.compute.run_instance,
+                          self.context, instance=instance)
+        #check state is failed even after the periodic poll
+        self._assert_state({'vm_state': vm_states.ERROR,
+                            'task_state': None})
+        self.compute.periodic_tasks(context.get_admin_context())
+        self._assert_state({'vm_state': vm_states.ERROR,
+                            'task_state': None})
+
     def test_run_instance_spawn_fail(self):
         """spawn failure test.
 
