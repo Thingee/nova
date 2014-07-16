@@ -383,7 +383,11 @@ class CloudController(object):
         s['progress'] = snapshot['progress']
         s['ownerId'] = snapshot['project_id']
         s['volumeSize'] = snapshot['volume_size']
-        s['description'] = snapshot['display_description']
+
+        if 'display_description' in snapshot:
+            s['description'] = snapshot['display_description']
+        else:
+            s['description'] = snapshot['description']
         return s
 
     def create_snapshot(self, context, volume_id, **kwargs):

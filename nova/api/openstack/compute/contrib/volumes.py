@@ -592,6 +592,7 @@ def _translate_snapshot_summary_view(context, vol):
     d['createdAt'] = vol['created_at']
     d['displayName'] = vol['display_name']
     d['displayDescription'] = vol['display_description']
+
     return d
 
 
